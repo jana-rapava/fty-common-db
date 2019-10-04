@@ -22,22 +22,43 @@
 #ifndef FTY_COMMON_DB_LIMITATIONS_H_INCLUDED
 #define FTY_COMMON_DB_LIMITATIONS_H_INCLUDED
 
-/* This class is intended to be overriden by different DB limitations for different
- * agent (e.g. forbidden DELETE, read-only DB layer, etc.)
-*/
-
 namespace fty
 {
-    class DBLimitations
+    class DBLimitationsAccessor
     {
-        public:
+    public:
+        /**
+         * @brief Construct a new Accessor object
+         *
+         * @param Object implementing fty::SyncClient
+         */
+        explicit DBLimitationsAccessor(fty::SyncClient & requestClient);
+
+        uint32_t getCreditsPerAsset(const std::string& asset_json);
+        uint32_t getCreditsAvailable();
+        uint32_t getCreditsTotalConsumed();
+        std::string activateAsset(const std::string& asset_json);
+        std::string deactivateAsset(const std::string& asset_json);
+        bool isOperationAllowed (const std::string& operation)
+        { return true; }
+
+    private:
+        fty::SyncClient & m_requestClient;
+
+        std::vector<std::string> sendCommand(const std::string & command, const std::vector<std::string> & frames) const;
+
+    };
+        /*public:
             virtual std::string activateAsset(const std::string& asset_json);
             virtual std::string deactivateAsset(const std::string& asset_json);
             virtual bool isOperationAllowed (const std::string& operation);
 
         private:
             std::vector<std::string> m_assets;
-    };
+    };*/
 }
+
+// Interface
+std::vector<std::pair<std::string,bool>> fty_common_db_limitations_accessor_test(fty::SyncClient & syncClient);
 
 #endif

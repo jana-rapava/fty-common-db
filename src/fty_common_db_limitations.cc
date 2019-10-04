@@ -30,15 +30,34 @@
 
 namespace fty
 {
-    std::string DBLimitations::activateAsset(const std::string& asset_json)
+    DBLimitationsAccessor::DBLimitationsAccessor(fty::SyncClient & requestClient)
+        : m_requestClient(requestClient)
+      {}
+
+    uint32_t DBLimitationsAccessor::getCreditsPerAsset(const std::string& asset_json)
     {
-        m_assets.push_back(asset_json);
+        return 0;
+    }
+
+    uint32_t DBLimitationsAccessor::getCreditsAvailable()
+    {
+        return 0;
+    }
+
+    uint32_t DBLimitationsAccessor::getCreditsTotalConsumed()
+    {
+        return 0;
+    }
+
+    std::string DBLimitationsAccessor::activateAsset(const std::string& asset_json)
+    {
+        //m_assets.push_back(asset_json);
         return std::string();
     }
 
-    std::string DBLimitations::deactivateAsset(const std::string& asset_json)
+    std::string DBLimitationsAccessor::deactivateAsset(const std::string& asset_json)
     {
-        auto it = m_assets.begin();
+        /*auto it = m_assets.begin();
         while (it != m_assets.end())
         {
             if (*it == asset_json)
@@ -47,13 +66,45 @@ namespace fty
                 break;
             }
             it++;
-        }
+        }*/
 
         return std::string();
     }
+} // end namespace
 
-    bool DBLimitations::isOperationAllowed (const std::string& operation)
+std::vector<std::pair<std::string,bool>> fty_common_db_limitations_accessor_test(fty::SyncClient & syncClient)
+{
+  std::vector<std::pair<std::string,bool>> testsResults;
+
+  //using namespace lic_cred;
+
+  printf(" ** fty_common_db_limitations_accessor_test: \n");
+
+  std::string testNumber;
+  std::string testName;
+
+//test 1.1 => Create and destroy DBLimitationsAccessor
+  testNumber = "1.1";
+  testName = "Create and destroy DBLimitationsAccessor";
+  printf("\n-----------------------------------------------------------------------\n");
+  {
+    printf(" *=>  Test #%s %s\n", testNumber.c_str(), testName.c_str());
+    try
     {
-        return true;
+      fty::DBLimitationsAccessor accessor(syncClient);
+
+      printf(" *<=  Test #%s > OK\n", testNumber.c_str());
+      testsResults.emplace_back (" Test #"+testNumber+" "+testName,true);
     }
+    catch(const std::exception& e)
+    {
+      printf(" *<=  Test #%s > Failed\n", testNumber.c_str());
+      printf("Error: %s\n",e.what());
+      testsResults.emplace_back (" Test #"+testNumber+" "+testName,false);
+    }
+  }
+
+
+//end of tests
+  return testsResults;
 }
